@@ -132,3 +132,30 @@ class TestSmsTwilioGateway(TransactionCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(mock_urlopen.call_count, 2)
         self.assertEqual({r["uuid"] for r in results}, {"uuid-1", "uuid-2"})
+
+    @patch(
+        "odoo.addons.sms_twilio_gateway.models.sms_api_twilio" ".urllib.request.urlopen"
+    )
+    def test_send_sms_api_key_auth(self, mock_urlopen):
+        """API Key auth uses key SID and secret instead of account token."""
+        self.gateway.write(
+            {
+                "twilio_auth_token": False,
+                "twilio_api_key_sid": "SKtest123",
+                "twilio_api_key_secret": "test_api_secret",
+            }
+        )
+        mock_resp = MagicMock()
+        mock_resp.read.return_value = b'{"sid": "SM456", "status": "queued"}'
+        mock_urlopen.return_value = mock_resp
+
+        api = SmsApiTwilio(self.env)
+        results = api._send_sms_batch(self._make_messages())
+        self.assertEqual(results[0]["state"], "success")
+        # Verify the Authorization header uses API key, not account SID
+        call_args = mock_urlopen.call_args
+        req = call_args[0][0]
+        import base64
+
+        expected_auth = base64.b64encode(b"SKtest123:test_api_secret").decode()
+        self.assertIn(expected_auth, req.get_header("Authorization"))

@@ -20,11 +20,10 @@
                         required="gateway_type == 'twilio'"
                         password="True"
                     />
-                    <field
-                        name="twilio_auth_token"
-                        required="gateway_type == 'twilio'"
-                        password="True"
-                    />
+                    <field name="twilio_auth_token" password="True" />
+                    <separator string="API Key Authentication (optional)" />
+                    <field name="twilio_api_key_sid" />
+                    <field name="twilio_api_key_secret" password="True" />
                     <field
                         name="twilio_from_number"
                         required="gateway_type == 'twilio'"

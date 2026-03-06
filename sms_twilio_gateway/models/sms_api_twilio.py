@@ -36,9 +36,15 @@ class SmsApiTwilio(SmsApiBase):
         """
         gateway = self._get_gateway()
         sid = gateway.twilio_account_sid
-        token = gateway.twilio_auth_token
         from_number = gateway.twilio_from_number
-        if not all([sid, token, from_number]):
+        # Support both Auth Token and API Key authentication
+        if gateway.twilio_api_key_sid and gateway.twilio_api_key_secret:
+            auth_user = gateway.twilio_api_key_sid
+            auth_pass = gateway.twilio_api_key_secret
+        else:
+            auth_user = sid
+            auth_pass = gateway.twilio_auth_token
+        if not all([sid, auth_pass, from_number]):
             _logger.error("Twilio gateway %s missing credentials", gateway.name)
             return [
                 {"uuid": num["uuid"], "state": "server_error"}
@@ -49,7 +55,9 @@ class SmsApiTwilio(SmsApiBase):
         for msg in messages:
             body = msg["content"]
             for num in msg["numbers"]:
-                state = self._send_one(sid, token, from_number, num["number"], body)
+                state = self._send_one(
+                    sid, auth_user, auth_pass, from_number, num["number"], body
+                )
                 results.append({"uuid": num["uuid"], "state": state})
         return results
 
@@ -65,13 +73,13 @@ class SmsApiTwilio(SmsApiBase):
         )
 
     @staticmethod
-    def _send_one(sid, token, from_number, to_number, body):
+    def _send_one(sid, auth_user, auth_pass, from_number, to_number, body):
         """Send a single SMS via Twilio REST API using stdlib only."""
         url = f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json"
         data = urllib.parse.urlencode(
             {"From": from_number, "To": to_number, "Body": body}
         ).encode()
-        auth = base64.b64encode(f"{sid}:{token}".encode()).decode()
+        auth = base64.b64encode(f"{auth_user}:{auth_pass}".encode()).decode()
         req = urllib.request.Request(url, data=data)
         req.add_header("Authorization", f"Basic {auth}")
         try:
