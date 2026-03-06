@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Ledo Enterprises LLC - Don Kendall
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl) -->
+<odoo>
+    <record id="view_ir_sms_gateway_form_twilio" model="ir.ui.view">
+        <field name="model">ir.sms.gateway</field>
+        <field
+            name="inherit_id"
+            ref="sms_alternative_provider.view_ir_sms_gateway_form"
+        />
+        <field name="arch" type="xml">
+            <group name="general" position="after">
+                <group
+                    name="twilio"
+                    string="Twilio Credentials"
+                    invisible="gateway_type != 'twilio'"
+                >
+                    <field
+                        name="twilio_account_sid"
+                        required="gateway_type == 'twilio'"
+                        password="True"
+                    />
+                    <field
+                        name="twilio_auth_token"
+                        required="gateway_type == 'twilio'"
+                        password="True"
+                    />
+                    <field
+                        name="twilio_from_number"
+                        required="gateway_type == 'twilio'"
+                        placeholder="+14122846600"
+                    />
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
