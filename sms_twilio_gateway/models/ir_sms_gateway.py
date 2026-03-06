@@ -21,7 +21,19 @@ class IrSmsGateway(models.Model):
         "API Key Secret",
         help="Required when API Key SID is set.",
     )
+    twilio_messaging_service_sid = fields.Char(
+        "Messaging Service SID",
+        help="Optional. If set, messages are sent via this Messaging Service "
+        "(MG...) instead of a direct From number. Required for US A2P "
+        "10DLC compliance when sending to US numbers.",
+    )
     twilio_from_number = fields.Char(
         "From Number",
-        help="Twilio phone number in E.164 format, e.g. +14122846600",
+        help="Twilio phone number in E.164 format, e.g. +14122846600. "
+        "Used as fallback when no Messaging Service SID is configured.",
+    )
+    twilio_status_callback_url = fields.Char(
+        "Status Callback URL",
+        help="Optional. Twilio will POST delivery status updates to this URL. "
+        "Useful for tracking delivery confirmations and failures.",
     )

@@ -34,6 +34,22 @@ This module adds Twilio as an SMS gateway provider for the
 It uses the Twilio REST API directly via Python's standard library (no
 external ``twilio`` pip package required).
 
+**Features:**
+
+- A2P 10DLC compliant — sends via Messaging Service SID so messages are
+  routed through your registered campaign (required for US delivery
+  since December 2024).
+- Falls back to a direct ``From`` number when no Messaging Service is
+  configured (useful for non-US destinations or testing).
+- Supports both Account Auth Token and API Key (SK…) authentication. API
+  Keys are recommended for production because they can be revoked
+  individually without rotating the master Auth Token.
+- Optional delivery status callback URL for tracking delivery
+  confirmations and failures via Twilio webhooks.
+- Comprehensive Twilio error-code mapping (21211, 21610, 30003–30034,
+  etc.) to Odoo SMS states so that invalid numbers, opt-outs, and
+  carrier blocks are reported correctly.
+
 **Table of contents**
 
 .. contents::
@@ -42,12 +58,76 @@ external ``twilio`` pip package required).
 Configuration
 =============
 
+Basic setup
+-----------
+
 1. Go to **Settings → Phone Validation → SMS Providers**.
+
 2. Create a new gateway with type **Twilio**.
-3. Fill in your **Account SID**, **Auth Token**, and **From Number**
-   (the Twilio phone number in E.164 format, e.g. ``+14122846600``).
-4. If you have multiple gateways, use the **sequence** handle to set
-   priority — the first matching gateway is used.
+
+3. Fill in your **Account SID** (starts with ``AC``).
+
+4. Choose an authentication method:
+
+   - **Auth Token** — paste the token from the Twilio Console.
+   - **API Key** (recommended) — create an API Key in the Twilio
+     Console, then fill in the **API Key SID** (``SK…``) and **API Key
+     Secret**. Leave *Auth Token* blank.
+
+A2P 10DLC compliance (US destinations)
+--------------------------------------
+
+Since December 2024 US carriers block all SMS from unregistered 10DLC
+numbers. To send to US numbers you **must**:
+
+1. Register a **Brand** in the Twilio Console (A2P → Brand
+   Registrations).
+2. Create a **Campaign** (A2P → Campaign Registrations) linked to a
+   **Messaging Service**.
+3. Add your Twilio phone number(s) to the Messaging Service's Sender
+   Pool.
+4. Wait for the campaign status to become **VERIFIED** (typically 1–15
+   business days).
+5. In this gateway form, paste the **Messaging Service SID** (``MG…``).
+
+When a Messaging Service SID is configured, messages use
+``MessagingServiceSid`` instead of ``From`` so that Twilio routes them
+through the registered campaign.
+
+If the Messaging Service SID is left blank, the module falls back to the
+**From Number** field — suitable for non-US destinations or testing with
+Twilio Magic Numbers.
+
+Delivery tracking (optional)
+----------------------------
+
+Fill in **Status Callback URL** with a publicly reachable endpoint.
+Twilio will ``POST`` delivery status updates (``queued``, ``sent``,
+``delivered``, ``undelivered``, ``failed``) to this URL. This is useful
+for monitoring delivery rates and diagnosing failures.
+
+Error code reference
+--------------------
+
+The module maps Twilio error codes to Odoo SMS states:
+
++-----------------------+----------------------+-------------------------+
+| Twilio code           | Meaning              | Odoo state              |
++=======================+======================+=========================+
+| 21211 / 21614         | Invalid number       | ``wrong_number_format`` |
++-----------------------+----------------------+-------------------------+
+| 30003 / 30005 / 30006 | Unreachable /        | ``wrong_number_format`` |
+|                       | landline             |                         |
++-----------------------+----------------------+-------------------------+
+| 21610                 | Recipient opted out  | ``unregistered``        |
+|                       | (STOP)               |                         |
++-----------------------+----------------------+-------------------------+
+| 30004 / 30007         | Carrier filter /     | ``server_error``        |
+|                       | spam block           |                         |
++-----------------------+----------------------+-------------------------+
+| 30034                 | Unregistered A2P     | ``server_error``        |
+|                       | 10DLC number         |                         |
++-----------------------+----------------------+-------------------------+
 
 Bug Tracker
 ===========

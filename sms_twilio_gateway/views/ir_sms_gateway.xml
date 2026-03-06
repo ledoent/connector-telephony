@@ -24,10 +24,14 @@
                     <separator string="API Key Authentication (optional)" />
                     <field name="twilio_api_key_sid" />
                     <field name="twilio_api_key_secret" password="True" />
+                    <separator string="Sender Configuration" />
+                    <field name="twilio_messaging_service_sid" placeholder="MG..." />
+                    <field name="twilio_from_number" placeholder="+14122846600" />
+                    <separator string="Delivery Tracking (optional)" />
                     <field
-                        name="twilio_from_number"
-                        required="gateway_type == 'twilio'"
-                        placeholder="+14122846600"
+                        name="twilio_status_callback_url"
+                        placeholder="https://example.com/twilio/status"
+                        widget="url"
                     />
                 </group>
             </group>

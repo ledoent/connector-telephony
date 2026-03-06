@@ -374,32 +374,133 @@ ul.auto-toc {
 <tt class="docutils literal">sms_alternative_provider</tt> framework.</p>
 <p>It uses the Twilio REST API directly via Python’s standard library (no
 external <tt class="docutils literal">twilio</tt> pip package required).</p>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li>A2P 10DLC compliant — sends via Messaging Service SID so messages are
+routed through your registered campaign (required for US delivery
+since December 2024).</li>
+<li>Falls back to a direct <tt class="docutils literal">From</tt> number when no Messaging Service is
+configured (useful for non-US destinations or testing).</li>
+<li>Supports both Account Auth Token and API Key (SK…) authentication. API
+Keys are recommended for production because they can be revoked
+individually without rotating the master Auth Token.</li>
+<li>Optional delivery status callback URL for tracking delivery
+confirmations and failures via Twilio webhooks.</li>
+<li>Comprehensive Twilio error-code mapping (21211, 21610, 30003–30034,
+etc.) to Odoo SMS states so that invalid numbers, opt-outs, and
+carrier blocks are reported correctly.</li>
+</ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-2">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-3">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-4">Authors</a></li>
-<li><a class="reference internal" href="#contributors" id="toc-entry-5">Contributors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-6">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
+<li><a class="reference internal" href="#basic-setup" id="toc-entry-2">Basic setup</a></li>
+<li><a class="reference internal" href="#a2p-10dlc-compliance-us-destinations" id="toc-entry-3">A2P 10DLC compliance (US destinations)</a></li>
+<li><a class="reference internal" href="#delivery-tracking-optional" id="toc-entry-4">Delivery tracking (optional)</a></li>
+<li><a class="reference internal" href="#error-code-reference" id="toc-entry-5">Error code reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="toc-entry-9">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-10">Maintainers</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
+<div class="section" id="basic-setup">
+<h2><a class="toc-backref" href="#toc-entry-2">Basic setup</a></h2>
 <ol class="arabic simple">
 <li>Go to <strong>Settings → Phone Validation → SMS Providers</strong>.</li>
 <li>Create a new gateway with type <strong>Twilio</strong>.</li>
-<li>Fill in your <strong>Account SID</strong>, <strong>Auth Token</strong>, and <strong>From Number</strong>
-(the Twilio phone number in E.164 format, e.g. <tt class="docutils literal">+14122846600</tt>).</li>
-<li>If you have multiple gateways, use the <strong>sequence</strong> handle to set
-priority — the first matching gateway is used.</li>
+<li>Fill in your <strong>Account SID</strong> (starts with <tt class="docutils literal">AC</tt>).</li>
+<li>Choose an authentication method:<ul>
+<li><strong>Auth Token</strong> — paste the token from the Twilio Console.</li>
+<li><strong>API Key</strong> (recommended) — create an API Key in the Twilio
+Console, then fill in the <strong>API Key SID</strong> (<tt class="docutils literal">SK…</tt>) and <strong>API Key
+Secret</strong>. Leave <em>Auth Token</em> blank.</li>
+</ul>
+</li>
 </ol>
 </div>
+<div class="section" id="a2p-10dlc-compliance-us-destinations">
+<h2><a class="toc-backref" href="#toc-entry-3">A2P 10DLC compliance (US destinations)</a></h2>
+<p>Since December 2024 US carriers block all SMS from unregistered 10DLC
+numbers. To send to US numbers you <strong>must</strong>:</p>
+<ol class="arabic simple">
+<li>Register a <strong>Brand</strong> in the Twilio Console (A2P → Brand
+Registrations).</li>
+<li>Create a <strong>Campaign</strong> (A2P → Campaign Registrations) linked to a
+<strong>Messaging Service</strong>.</li>
+<li>Add your Twilio phone number(s) to the Messaging Service’s Sender
+Pool.</li>
+<li>Wait for the campaign status to become <strong>VERIFIED</strong> (typically 1–15
+business days).</li>
+<li>In this gateway form, paste the <strong>Messaging Service SID</strong> (<tt class="docutils literal">MG…</tt>).</li>
+</ol>
+<p>When a Messaging Service SID is configured, messages use
+<tt class="docutils literal">MessagingServiceSid</tt> instead of <tt class="docutils literal">From</tt> so that Twilio routes them
+through the registered campaign.</p>
+<p>If the Messaging Service SID is left blank, the module falls back to the
+<strong>From Number</strong> field — suitable for non-US destinations or testing with
+Twilio Magic Numbers.</p>
+</div>
+<div class="section" id="delivery-tracking-optional">
+<h2><a class="toc-backref" href="#toc-entry-4">Delivery tracking (optional)</a></h2>
+<p>Fill in <strong>Status Callback URL</strong> with a publicly reachable endpoint.
+Twilio will <tt class="docutils literal">POST</tt> delivery status updates (<tt class="docutils literal">queued</tt>, <tt class="docutils literal">sent</tt>,
+<tt class="docutils literal">delivered</tt>, <tt class="docutils literal">undelivered</tt>, <tt class="docutils literal">failed</tt>) to this URL. This is useful
+for monitoring delivery rates and diagnosing failures.</p>
+</div>
+<div class="section" id="error-code-reference">
+<h2><a class="toc-backref" href="#toc-entry-5">Error code reference</a></h2>
+<p>The module maps Twilio error codes to Odoo SMS states:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="31%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Twilio code</th>
+<th class="head">Meaning</th>
+<th class="head">Odoo state</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>21211 / 21614</td>
+<td>Invalid number</td>
+<td><tt class="docutils literal">wrong_number_format</tt></td>
+</tr>
+<tr><td>30003 / 30005 / 30006</td>
+<td>Unreachable /
+landline</td>
+<td><tt class="docutils literal">wrong_number_format</tt></td>
+</tr>
+<tr><td>21610</td>
+<td>Recipient opted out
+(STOP)</td>
+<td><tt class="docutils literal">unregistered</tt></td>
+</tr>
+<tr><td>30004 / 30007</td>
+<td>Carrier filter /
+spam block</td>
+<td><tt class="docutils literal">server_error</tt></td>
+</tr>
+<tr><td>30034</td>
+<td>Unregistered A2P
+10DLC number</td>
+<td><tt class="docutils literal">server_error</tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-2">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/connector-telephony/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -407,21 +508,21 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-3">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-7">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-4">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-8">Authors</a></h2>
 <ul class="simple">
 <li>Ledo Enterprises LLC</li>
 </ul>
 </div>
 <div class="section" id="contributors">
-<h2><a class="toc-backref" href="#toc-entry-5">Contributors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-9">Contributors</a></h2>
 <ul class="simple">
 <li>Don Kendall <a class="reference external" href="mailto:dkendall&#64;ledoweb.com">dkendall&#64;ledoweb.com</a></li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-6">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-10">Maintainers</a></h2>
 <p>This module is maintained by the OCA.</p>
 <a class="reference external image-reference" href="https://odoo-community.org">
 <img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
