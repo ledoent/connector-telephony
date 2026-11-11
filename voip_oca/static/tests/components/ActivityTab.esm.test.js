@@ -38,13 +38,13 @@ test("Check Activity Tab", async () => {
     });
     await start();
     expect(".o_menu_systray .o_nav_entry[title='Softphone']").toHaveCount(1);
-    click(".o_menu_systray .o_nav_entry[title='Softphone']");
+    await click(".o_menu_systray .o_nav_entry[title='Softphone']");
     await animationFrame();
     expect(".o_voip_softphone").toHaveCount(1);
-    click(".o_voip_softphone li a[name='activity_list']");
+    await click(".o_voip_softphone li a[name='activity_list']");
     await animationFrame();
     expect(".o_voip_softphone .o_voip_activity_item").toHaveCount(1);
-    click(".o_voip_softphone .o_voip_activity_item", {text: "Test Partner"});
+    await click(".o_voip_softphone .o_voip_activity_item", {text: "Test Partner"});
     await animationFrame();
     expect(".o_voip_softphone .o_voip_partner_header").toHaveCount(1);
     expect(".o_voip_softphone .o_voip_partner_actions").toHaveCount(1);

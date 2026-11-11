@@ -1,6 +1,6 @@
 /* @odoo-module */
 
-import {Record} from "@mail/core/common/record";
+import {Record} from "@mail/model/export";
 import {deserializeDateTime} from "@web/core/l10n/dates";
 import {durationStr} from "../../utils/utils.esm";
 
@@ -23,8 +23,10 @@ import {durationStr} from "../../utils/utils.esm";
 export class Call extends Record {
     static id = "id";
     static _name = "voip.call";
-    /** @type {Object.<number, Call>} */
-    static records = {};
+    // No `static records` here on purpose. 20.0's Record keeps the per-model
+    // registry as a Map (record.js uses Model.records.get()/.set()), and the
+    // base class declares it; re-declaring it as `{}` would hand a plain
+    // object to Map call sites. No core 20.0 model declares it any more.
     /**
      * @param {Data} data
      * @returns {Call}
@@ -73,9 +75,9 @@ export class Call extends Record {
     }
     get iconTypeCall() {
         if (this.typeCall === "incoming") {
-            return "fa fa-arrow-down";
+            return "arrow_downward";
         }
-        return "fa fa-arrow-up";
+        return "arrow_upward";
     }
     /**
      * Duration of the call in seconds.

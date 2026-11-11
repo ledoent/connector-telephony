@@ -54,13 +54,13 @@ test("Check Call Tab", async () => {
     });
     await start();
     expect(".o_menu_systray .o_nav_entry[title='Softphone']").toHaveCount(1);
-    click(".o_menu_systray .o_nav_entry[title='Softphone']");
+    await click(".o_menu_systray .o_nav_entry[title='Softphone']");
     await animationFrame();
     expect(".o_voip_softphone").toHaveCount(1);
-    click(".o_voip_softphone li a[name='call_list']");
+    await click(".o_voip_softphone li a[name='call_list']");
     await animationFrame();
     expect(".o_voip_softphone .o_voip_call_item").toHaveCount(2);
-    click(".o_voip_softphone .o_voip_call_item", {text: "Test Partner"});
+    await click(".o_voip_softphone .o_voip_call_item", {text: "Test Partner"});
     await animationFrame();
     expect(".o_voip_softphone .o_voip_partner_header").toHaveCount(1);
     expect(".o_voip_softphone .o_voip_partner_actions").toHaveCount(1);

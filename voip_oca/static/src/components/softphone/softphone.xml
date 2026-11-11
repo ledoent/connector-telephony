@@ -1,81 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- Copyright 2025 Dixmit
-     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <templates xml:space="preserve">
     <t t-name="voip_oca.VoipOCASoftphone">
         <div
             t-attf-class="o_voip_softphone position-absolute d-flex flex-column bottom-0 ms-2 bg-white shadow"
-            t-if="voip.isOpened"
+            t-if="this.voip.isOpened"
         >
             <div
                 class="o_voip_softphone_header d-flex justify-content-between align-items-center rounded-top-3 cursor-pointer text-white"
-                t-on-click="onClickBar"
+                t-on-click="this.onClickBar"
             >
                 <div>
                     <span
-                        t-attf-class="o_voip_status_icon fa fa-circle ms-3 me-1 o_voip_#{voip.status}"
+                        class="oi"
+                        data-icon="circle"
+                        t-attf-class="o_voip_status_icon ms-3 me-1 o_voip_#{this.voip.status}"
                     />
-                    <span class="oi oi-large oi-voip mx-1" />
+                    <span class="oi oi-lg mx-1" data-icon="phone" />
                     <span class="mx-1">VoIP</span>
                 </div>
                 <div>
                     <button
                         class="btn btn-small text-white border-0 shadow-none"
                         type="button"
-                        t-on-click="onClosePhone"
+                        t-on-click="this.onClosePhone"
                     >
-                        <i class="fa fa-close" />
+                        <i class="oi" data-icon="close" />
                     </button>
                 </div>
             </div>
-            <div t-if="!voip.isFolded" class="o_voip_softphone_content">
-                <div t-if="voip.inCall">
+            <div t-if="!this.voip.isFolded" class="o_voip_softphone_content">
+                <div t-if="this.voip.inCall">
                     <Call />
                 </div>
                 <t t-else="">
-                    <div t-if="voip.numpadTab">
-                        <Numpad onCall.bind="onCall" />
+                    <div t-if="this.voip.numpadTab">
+                        <Numpad onCall.bind="this.onCall" />
                     </div>
-                    <div t-if="voip.partner and !voip.numpadTab">
-                        <Partner t-props="voip.partnerProps" />
+                    <div t-if="this.voip.partner and !this.voip.numpadTab">
+                        <Partner t-props="this.voip.partnerProps" />
                     </div>
                     <div
-                        t-if="!voip.partner and !voip.numpadTab"
+                        t-if="!this.voip.partner and !this.voip.numpadTab"
                         class="o_voip_softphone_detail"
                     >
-                        <div class="d-flex" t-if="showInput">
+                        <div class="d-flex" t-if="this.showInput">
                             <input
                                 class="form-control border-0 shadow-none"
                                 placeholder="Search"
-                                t-model.trim="voip.searchValue"
-                                t-ref="searchInput"
-                                t-on-input="onSearchInput"
+                                t-model.trim.proxy="this.voip.searchValue"
+                                t-ref="this.searchInput"
+                                t-on-input="this.onSearchInput"
                             />
-                            <button class="oi oi-search btn" />
+                            <button class="oi btn" data-icon="search" />
                         </div>
 
                         <ul class="nav nav-tabs text-center">
                             <li
                                 class="nav-item fs-6"
-                                t-foreach="tabElements"
+                                t-foreach="this.tabElements"
                                 t-as="tab"
                                 t-key="tab[0]"
-                                t-if="!voip.numpadTab and !voip.partner"
+                                t-if="!this.voip.numpadTab and !this.voip.partner"
                             >
                                 <a
-                                    t-attf-class="nav-link #{voip.selectedTab == tab[0] ? 'active' : ''}"
+                                    t-attf-class="nav-link #{this.voip.selectedTab == tab[0] ? 'active' : ''}"
                                     t-att-name="tab[0]"
                                     aria-current="page"
                                     href="#"
-                                    t-esc="tab[1].title"
+                                    t-out="tab[1].title"
                                     t-on-click="() =>this.onSelectTab(tab[0])"
                                 />
                             </li>
                         </ul>
                         <t
-                            t-component="childComponent"
-                            t-props="childComponentProps"
-                            t-if="childComponent"
+                            t-component="this.childComponent"
+                            t-props="this.childComponentProps"
+                            t-if="this.childComponent"
                         />
                     </div>
                     <div
@@ -86,14 +86,14 @@
                             title="Open Numpad"
                             t-on-click="() => this.onOpenNumpad()"
                         >
-                            <i class="fa fa-fw fa-lg fa-keyboard-o" />
+                            <i class="oi oi-fw oi-lg" data-icon="apps" />
                         </button>
                         <button
                             class="btn shadow-none"
                             title="Call"
                             t-on-click="() => this.onCall()"
                         >
-                            <i class="fa fa-fw fa-lg fa-phone" />
+                            <i class="oi oi-fw oi-lg" data-icon="phone" />
                         </button>
                     </div>
                 </t>

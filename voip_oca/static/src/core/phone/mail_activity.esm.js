@@ -1,6 +1,6 @@
 import {Activity} from "@mail/core/common/activity_model";
-import {patch} from "@web/core/utils/patch";
 import {assignIn} from "@mail/utils/common/misc";
+import {patch} from "@web/core/utils/patch";
 
 patch(Activity, {
     _insert(data) {

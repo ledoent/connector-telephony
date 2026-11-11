@@ -7,7 +7,7 @@
 */
 import {_t} from "@web/core/l10n/translation";
 import {loadBundle} from "@web/core/assets";
-import {reactive} from "@odoo/owl";
+import {proxy} from "@odoo/owl";
 import {registry} from "@web/core/registry";
 
 export class VoipAgent {
@@ -23,13 +23,13 @@ export class VoipAgent {
         this.isHolded = false;
         this.store = services["mail.store"];
         this.connectAgent();
-        return reactive(this);
+        return proxy(this);
     }
     get hasRtcSupport() {
         return Boolean(
             navigator.mediaDevices &&
-                navigator.mediaDevices.getUserMedia &&
-                window.MediaStream
+            navigator.mediaDevices.getUserMedia &&
+            window.MediaStream
         );
     }
     get agentConfig() {

@@ -3,12 +3,14 @@
     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 */
 
-import {Component, onMounted} from "@odoo/owl";
+import {Component, onMounted, t, useProps} from "@odoo/owl";
 import {_t} from "@web/core/l10n/translation";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
 
 export class ActivityList extends Component {
+    static template = "voip_oca.ActivityList";
+    props = useProps({records: t.array()});
     setup() {
         super.setup();
         this.voip = useService("voip_oca");
@@ -19,8 +21,6 @@ export class ActivityList extends Component {
         this.voip.open({activity: activity});
     }
 }
-ActivityList.props = {records: {type: Array}};
-ActivityList.template = "voip_oca.ActivityList";
 
 registry.category("voip_elements").add("activity_list", {
     component: ActivityList,

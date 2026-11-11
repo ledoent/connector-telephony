@@ -11,12 +11,25 @@ patch(PhoneField.prototype, {
         super.setup();
         this.agent = useService("voip_agent_oca");
     },
-    onPhoneClick(ev) {
+    /**
+     * Place the call through the softphone when an agent is registered.
+     *
+     * 20.0 rebuilt this field: the markup is driven by `actionButtons`, whose
+     * single "Call" entry invokes this hook, and its anchor already carries
+     * `t-on-click.prevent.stop`. There is no longer an `<a class="o_form_uri">`
+     * -- nor a `web.FormPhoneField` template -- to xpath onto, so the
+     * `voip.PhoneField` / `voip.FormPhoneField` extensions were dropped rather
+     * than re-pointed.
+     *
+     * Falling through to `super()` when no agent is registered preserves the
+     * 19.0 behaviour: there, returning early let the browser follow the `tel:`
+     * href. Here the click is always prevented, so the base implementation has
+     * to be invoked explicitly or the button would do nothing without voip.
+     */
+    onLinkClicked() {
         if (!this.agent.agent) {
-            return;
+            return super.onLinkClicked();
         }
-        ev.preventDefault();
-        ev.stopPropagation();
-        this.agent.call({number: this.props.record.data[this.props.name]});
+        return this.agent.call({number: this.dialNumber});
     },
 });

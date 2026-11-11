@@ -49,10 +49,23 @@ class VoipOcaActivity(models.Model):
             res_record = self.env[activity.res_model].browse(activity.res_id)
             if res_record._filtered_access("read"):
                 allowed_activity_ids.append(activity.id)
-        return self.browse(allowed_activity_ids).activity_format()
+        # 20.0 removed `activity_format()`. A store payload is now built with
+        # `Store().add(records, <field-list method name>)`, which serialises to
+        # the same shape the client's `store.insert()` already consumes -- so
+        # the JS caller in voip_oca_service.esm.js needs no change.
+        return Store().add(self.browse(allowed_activity_ids), "_store_activity_fields")
 
-    def _to_store_defaults(self, target):
-        return super()._to_store_defaults(target) + [
-            Store.One("main_partner_id", []),
-            "main_partner",
-        ]
+    def _store_activity_fields(self, res):
+        """Add this module's two fields to the activity store payload.
+
+        Replaces the 19.0 `_to_store_defaults(target)` override; 20.0 removed
+        that hook along with `activity_format()`. The replacement is
+        declarative and mutates a `Store.FieldList` in place instead of
+        returning a list, so there is nothing to concatenate onto `super()`.
+        Note `res.one(...)` is the public form -- `Store.One` itself gained a
+        leading `store` argument on 20.0 and is internal plumbing now.
+        """
+        result = super()._store_activity_fields(res)
+        res.one("main_partner_id", [])
+        res.attr("main_partner")
+        return result

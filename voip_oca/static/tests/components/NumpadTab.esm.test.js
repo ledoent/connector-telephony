@@ -20,21 +20,23 @@ test("Check Numpad Tab", async () => {
     });
     await start();
     expect(".o_menu_systray .o_nav_entry[title='Softphone']").toHaveCount(1);
-    click(".o_menu_systray .o_nav_entry[title='Softphone']");
+    await click(".o_menu_systray .o_nav_entry[title='Softphone']");
     await animationFrame();
     expect(".o_voip_softphone").toHaveCount(1);
-    click(".o_voip_softphone .o_voip_softphone_footer button[title='Open Numpad']");
+    await click(
+        ".o_voip_softphone .o_voip_softphone_footer button[title='Open Numpad']"
+    );
     await animationFrame();
     expect(".o_voip_softphone .o_numpad_input").toHaveCount(1);
     expect(".o_voip_softphone .o_numpad_input").toHaveValue("");
     expect(".o_voip_softphone .o_numpad_button").toHaveCount(12);
-    click(".o_voip_softphone .o_numpad_button", {text: "1"});
+    await click(".o_voip_softphone .o_numpad_button", {text: "1"});
     await animationFrame();
     expect(".o_voip_softphone .o_numpad_input").toHaveValue("1");
-    click(".o_voip_softphone .o_numpad_button", {text: "2"});
+    await click(".o_voip_softphone .o_numpad_button", {text: "2"});
     await animationFrame();
     expect(".o_voip_softphone .o_numpad_input").toHaveValue("12");
-    click(".o_voip_softphone .o_numpad_delete");
+    await click(".o_voip_softphone .o_numpad_delete");
     await animationFrame();
     expect(".o_voip_softphone .o_numpad_input").toHaveValue("1");
 });

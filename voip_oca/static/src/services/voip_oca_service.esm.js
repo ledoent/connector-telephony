@@ -5,7 +5,7 @@
     of the voip widgets.
 */
 import {matchString} from "../utils/utils.esm";
-import {reactive} from "@odoo/owl";
+import {proxy} from "@odoo/owl";
 import {registry} from "@web/core/registry";
 import {session} from "@web/session";
 import {url} from "@web/core/utils/urls";
@@ -41,7 +41,7 @@ export class VoipOCA {
         this.user = env.services.user;
         // We will make this service reactive,
         // this way we will hanble the changes on the component
-        return reactive(this);
+        return proxy(this);
     }
     /* Widget Buttons */
     handleVoip() {
@@ -81,7 +81,7 @@ export class VoipOCA {
     /* Elements */
 
     get partners() {
-        return Object.values(this.store["res.partner"].records).filter(
+        return [...this.store["res.partner"].records.values()].filter(
             (partner) =>
                 partner.phone &&
                 (!this.searchValue ||
@@ -91,7 +91,7 @@ export class VoipOCA {
         );
     }
     get activities() {
-        return Object.values(this.store["mail.activity"].records).filter(
+        return [...this.store["mail.activity"].records.values()].filter(
             (activity) =>
                 (!this.searchValue ||
                     [activity.summary, activity.resName, activity.main_partner].some(
@@ -104,7 +104,7 @@ export class VoipOCA {
     }
 
     get calls() {
-        return Object.values(this.store["voip.call"].records)
+        return [...this.store["voip.call"].records.values()]
             .filter(
                 (call) =>
                     !this.searchValue ||

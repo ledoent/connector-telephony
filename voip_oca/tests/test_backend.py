@@ -97,15 +97,21 @@ class TestVoipOca(TransactionCase):
         self.assertEqual(self.activity_02.main_partner_id, self.partner_02)
         self.assertEqual(self.activity_02.main_partner, self.partner_02.name)
 
+    def _search_activities(self, term):
+        """20.0 returns a Store rather than a plain dict.
+
+        `_build_result()` is what core's own tests use to inspect one
+        (mail/tests/test_discuss_tools.py); `as_dict()` is the JSON hook and
+        documents itself as not for direct calls.
+        """
+        store = self.env["mail.activity"].get_call_activities(term, 0, 1000)
+        return store._build_result()["mail.activity"]
+
     def test_activity_search(self):
-        results = self.env["mail.activity"].get_call_activities("Activity 01", 0, 1000)[
-            "mail.activity"
-        ]
+        results = self._search_activities("Activity 01")
         self.assertIn(self.activity_01.id, [result["id"] for result in results])
         self.assertNotIn(self.activity_02.id, [result["id"] for result in results])
-        results = self.env["mail.activity"].get_call_activities("Activity 02", 0, 1000)[
-            "mail.activity"
-        ]
+        results = self._search_activities("Activity 02")
         self.assertNotIn(self.activity_01.id, [result["id"] for result in results])
         self.assertIn(self.activity_02.id, [result["id"] for result in results])
 
