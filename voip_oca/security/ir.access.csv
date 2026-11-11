@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_voip_call,access_voip_call,voip.call,base.group_user,crud,
+access_voip_pbx_access,access_voip_pbx,voip.pbx,base.group_user,r,
+access_voip_pbx_manage,access_voip_pbx,voip.pbx,base.group_system,crud,

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="voip_oca.VoipOCASystray">
+        <div>
+            <button
+                t-attf-class="o_nav_entry o_voip_#{ this.voip_oca.status }"
+                title="Softphone"
+                t-on-click="this.onClick"
+                t-if="this.voip_oca.pbx_id"
+            >
+                <i class="oi oi-lg" data-icon="phone" />
+            </button>
+        </div>
+    </t>
+</templates>

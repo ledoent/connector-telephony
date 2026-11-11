@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="voip_oca.Numpad">
+        <div class="d-flex border-bottom justify-content-around">
+            <input
+                class="o_numpad_input ps-3 border-0 no-border"
+                placeholder="Enter number..."
+                t-model.proxy="this.voip.numpad.value"
+                t-ref="this.numpadValue"
+                t-on-keydown="this.onNumpadValue"
+            />
+            <button
+                class="btn o_numpad_delete"
+                title="Delete"
+                t-on-click="() => this.deleteNumber()"
+            >
+                <i class="oi" data-icon="west" />
+            </button>
+        </div>
+        <div class="d-flex justify-content-center row row-cols-3 mx-0">
+            <button
+                t-foreach="this.keys"
+                t-as="key"
+                t-key="key"
+                t-out="key"
+                t-on-click="() => this.onKeyClick(key)"
+                t-att-name="key"
+                class="o_numpad_button btn btn-light py-3 fw-normal fs-2 "
+            />
+        </div>
+    </t>
+</templates>

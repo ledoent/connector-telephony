@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="voip_oca.Call">
+        <t t-if="!this.state.numpad">
+            <div
+                class="d-flex flex-column justify-content-center align-items-center py-2"
+            >
+                <t t-if="this.voip.partner and this.voip.partner.id">
+                    <img
+                        class="rounded-circle"
+                        t-att-src="this.voip.imagePartner(this.voip.partner.id)"
+                    />
+                    <span class="mt-2 fw-bolder" t-out="this.voip.partner.name" />
+                    <span class="mt-2" t-out="this.voip.partner.display_name" />
+                </t>
+                <t t-else="">
+                    <span class="fw-bolder">No contact info</span>
+                </t>
+                <span class="mt-2">
+                    <i class="oi" data-icon="phone" />
+                    <span class="mt-2 mx-2" t-out="this.voip.call.phoneNumber" />
+                </span>
+                <span class="mt-2 small text-muted" t-if="this.voip.call">
+                    <i class="oi px-2" t-att-data-icon="this.voip.call.iconTypeCall" />
+                    <t t-out="this.voip.call.dateStr" />
+                </span>
+                <span class="mt-2 small">
+                    In call for: <t t-out="this.duration" />
+                </span>
+            </div>
+            <div class="d-flex flex-column px-3 pt-2">
+                <span>Actions</span>
+                <div class="d-flex justify-content-around my-3">
+                    <button
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Send email"
+                        t-on-click="this.onEmailClick"
+                        t-if="this.voip.partner and this.voip.partner.email"
+                    >
+                        <i class="oi oi-fw oi-lg" data-icon="mail" />
+                    </button>
+                    <button
+                        t-if="this.voip.partner and this.voip.partner.id"
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Info contact"
+                        t-on-click="this.onOpenPartnerClick"
+                    >
+                        <i class="oi oi-fw oi-lg" data-icon="person" />
+                    </button>
+                    <button
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Schedule activity"
+                        t-on-click="this.onScheduleActivity"
+                    >
+                        <i class="oi oi-fw oi-lg" data-icon="schedule" />
+                    </button>
+                </div>
+            </div>
+            <div
+                class="d-flex flex-column px-3"
+                t-if="this.voip.call.state == 'calling' and this.voip.call.typeCall == 'incoming'"
+            >
+                <div class="d-flex justify-content-around my-3">
+                    <button
+                        class="btn btn-success p-3 rounded-circle"
+                        title="Accept"
+                        t-on-click="this.onAccept"
+                    >
+                        <i class="oi oi-fw oi-lg" data-icon="phone" />
+                    </button>
+                </div>
+            </div>
+            <div
+                class="d-flex flex-column px-3"
+                t-if="this.voip.call.state == 'ongoing' "
+            >
+                <span>Call</span>
+                <div class="d-flex justify-content-around my-3">
+                    <button
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Transfer"
+                        t-on-click="this.onTransfer"
+                    >
+                        <i class="oi oi-fw oi-lg" data-icon="swap_horiz" />
+                    </button>
+                    <button
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Mute"
+                        t-on-click="this.onMute"
+                    >
+                        <i
+                            class="oi oi-fw oi-lg"
+                            data-icon="mic"
+                            t-if="!this.agent.isMuted"
+                        />
+                        <i
+                            class="oi oi-fw oi-lg"
+                            data-icon="mic_off"
+                            t-if="this.agent.isMuted"
+                        />
+                    </button>
+                    <button
+                        class="btn btn-secondary p-3 rounded-circle"
+                        title="Pause"
+                        t-on-click="this.onHold"
+                    >
+                        <i
+                            class="oi oi-fw oi-lg"
+                            t-attf-data-icon="#{ this.agent.isHolded? 'play_arrow': 'pause' }"
+                        />
+                    </button>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <Numpad onNumpadValue.bind="this.onNumpadValue" />
+        </t>
+        <div
+            class="o_voip_softphone_footer d-flex justify-content-around align-items-center p-3"
+        >
+            <button
+                class="btn shadow-none"
+                title="Open Numpad"
+                t-on-click="() => this.onOpenNumpad()"
+            >
+                <i class="oi oi-fw oi-lg" data-icon="apps" />
+            </button>
+            <button
+                class="btn text-danger shadow-none"
+                title="Call"
+                t-on-click="() => this.onHangup()"
+            >
+                <i class="oi oi-fw oi-lg" data-icon="phone" />
+            </button>
+        </div>
+    </t>
+</templates>

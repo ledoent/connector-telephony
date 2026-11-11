@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="voip_oca.Transfer">
+        <div>
+            <h3 class="popover-header d-flex">
+                Transfer to
+                <span class="flex-grow-1" />
+                <button
+                class="btn-close btn-sm"
+                data-hotkey="x"
+                t-on-click="this.props.close"
+            />
+            </h3>
+            <div class="d-flex p-2">
+                <input
+                    class="form-control"
+                    type="text"
+                    placeholder="Enter number"
+                    t-model.proxy="this.state.value"
+                    t-ref="this.inputRef"
+                    t-on-keydown="this.onKeydown"
+                />
+                <button
+                    class="btn btn-primary ms-2"
+                    data-hotkey="q"
+                    t-on-click="this.transfer"
+                >Transfer</button>
+            </div>
+        </div>
+    </t>
+</templates>

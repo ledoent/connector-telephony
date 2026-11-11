@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="voip_oca.Partner">
+        <div class="d-flex align-items-start w-100 py-2">
+            <button class="btn" t-on-click="this.onClose">
+                <i class="oi" data-icon="chevron_left" />
+            </button>
+        </div>
+        <div
+            class="o_voip_partner_header d-flex flex-column justify-content-center align-items-center"
+        >
+            <t t-if="this.props.partner.id">
+                <img
+                    class="rounded-circle"
+                    t-att-src="this.voip.imagePartner(this.props.partner.id)"
+                />
+                <span class="mt-2 fw-bolder" t-out="this.props.partner.name" />
+            </t>
+            <t t-else="">
+                <span class="fw-bolder">No contact info</span>
+            </t>
+            <t t-if="this.phoneNumber">
+                <button class="btn text-success" t-on-click="this.onCall">
+                    <i class="oi" data-icon="phone" />
+                    <span class="mt-2 mx-2" t-out="this.phoneNumber" />
+                </button>
+            </t>
+            <span class="mt-2 small text-muted" t-if="this.props.call">
+                <i class="oi px-2" t-att-data-icon="this.props.call.iconTypeCall" />
+                <t t-out="this.props.call.dateStr" />
+                <t t-if="this.props.call.duration"> • <t
+                    t-out="this.props.call.durationStr"
+                />
+                </t>
+            </span>
+        </div>
+        <div class="o_voip_partner_actions d-flex flex-column px-3 pt-4">
+            <span>Actions</span>
+            <div class="d-flex justify-content-around my-3">
+                <button
+                    t-if="this.props.activity.id"
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Related document"
+                    t-on-click="this.onOpenDocument"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="description" />
+                </button>
+                <button
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Send email"
+                    t-on-click="this.onEmailClick"
+                    t-if="this.props.partner and this.props.partner.email"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="mail" />
+                </button>
+                <button
+                    t-if="this.props.partner.id"
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Info contact"
+                    t-on-click="this.onOpenPartnerClick"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="person" />
+                </button>
+                <button
+                    t-if="!this.props.partner.id"
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="New contact"
+                    t-on-click="this.onNewPartnerClick"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="add" />
+                </button>
+                <button
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Schedule activity"
+                    t-on-click="this.onScheduleActivity"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="schedule" />
+                </button>
+            </div>
+        </div>
+        <div
+            t-if="this.props.activity.id"
+            class="o_voip_partner_activity d-flex flex-column px-3"
+        >
+            <span>Related activity</span>
+            <div class="d-flex justify-content-around my-3">
+                <button
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Mark as done"
+                    t-on-click="this.onMarkAsDone"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="check" />
+                </button>
+                <button
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Edit activity"
+                    t-on-click="this.onEdit"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="edit_square" />
+                </button>
+                <button
+                    class="btn btn-secondary p-3 rounded-circle"
+                    title="Cancel activity"
+                    t-on-click="this.onDelete"
+                >
+                    <i class="oi oi-fw oi-lg" data-icon="close" />
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>
