@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2025 Dixmit
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
-    <record model="ir.ui.view" id="view_users_form">
+    <record id="view_users_form" model="ir.ui.view">
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_form" />
         <field name="arch" type="xml">
@@ -18,7 +18,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="view_users_form_simple_modif">
+    <record id="view_users_form_simple_modif" model="ir.ui.view">
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_form_simple_modif" />
         <field name="arch" type="xml">

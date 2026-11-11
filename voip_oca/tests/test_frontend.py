@@ -35,7 +35,9 @@ class TestFrontend(common.HttpCase):
                 "voip_password": False,
             }
         )
-        cls.payload = json.dumps(dict(jsonrpc="2.0", method="call", id=str(uuid4())))
+        cls.payload = json.dumps(
+            {"jsonrpc": "2.0", "method": "call", "id": str(uuid4())}
+        )
         cls.headers = {
             "Content-Type": "application/json",
         }
