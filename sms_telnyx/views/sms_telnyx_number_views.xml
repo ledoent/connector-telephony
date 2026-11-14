@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="sms_telnyx_number_view_list" model="ir.ui.view">
+        <field name="name">sms.telnyx.number.list</field>
+        <field name="model">sms.telnyx.number</field>
+        <field name="arch" type="xml">
+            <list string="Telnyx Numbers" editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="number" />
+                <field name="country_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </list>
+        </field>
+    </record>
+
+    <record id="sms_telnyx_number_view_form" model="ir.ui.view">
+        <field name="name">sms.telnyx.number.form</field>
+        <field name="model">sms.telnyx.number</field>
+        <field name="arch" type="xml">
+            <form string="Telnyx Number">
+                <sheet>
+                    <group>
+                        <field name="number" placeholder="+15551234567" />
+                        <field name="country_id" />
+                        <field name="company_id" groups="base.group_multi_company" />
+                        <field name="sequence" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sms_telnyx_number_action" model="ir.actions.act_window">
+        <field name="name">Telnyx Numbers</field>
+        <field name="res_model">sms.telnyx.number</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

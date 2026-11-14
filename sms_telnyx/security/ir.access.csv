@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_sms_telnyx_number_system,access_sms_telnyx_number_system,sms.telnyx.number,base.group_system,crud,"[('company_id', 'in', company_ids)]"
+access_sms_telnyx_inbound_system,access_sms_telnyx_inbound_system,sms.telnyx.inbound,base.group_system,crud,"[('company_id', 'in', company_ids)]"
+access_sms_telnyx_inbound_user,access_sms_telnyx_inbound_user,sms.telnyx.inbound,base.group_user,r,"[('company_id', 'in', company_ids), ('partner_id', 'access', 'read')]"
+access_sms_telnyx_account_manage_system,access_sms_telnyx_account_manage_system,sms.telnyx.account.manage,base.group_system,cru,"[('company_id', 'in', company_ids)]"
