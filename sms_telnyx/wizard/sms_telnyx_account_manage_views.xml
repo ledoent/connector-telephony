@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="sms_telnyx_account_manage_view_form" model="ir.ui.view">
+        <field name="name">sms.telnyx.account.manage.view.form</field>
+        <field name="model">sms.telnyx.account.manage</field>
+        <field name="arch" type="xml">
+            <form string="Manage Telnyx SMS">
+                <group string="Credentials">
+                    <field name="company_id" />
+                    <field name="sms_telnyx_api_key" password="True" />
+                    <field name="sms_telnyx_public_key" />
+                    <field name="sms_telnyx_messaging_profile_id" />
+                    <label for="test_number" />
+                    <div class="d-flex align-items-center">
+                        <field
+                            name="test_number"
+                            placeholder="+1 202-555-0100"
+                            class="w-auto"
+                        />
+                        <button
+                            name="action_send_test"
+                            string="Send test SMS"
+                            icon="send"
+                            icon_class="oi-filled"
+                            type="object"
+                            class="btn btn-link w-auto ms-1 p-0"
+                        />
+                    </div>
+                </group>
+                <group string="Phone Numbers">
+                    <field
+                        name="sms_telnyx_number_ids"
+                        colspan="2"
+                        nolabel="1"
+                        context="{'default_company_id': company_id}"
+                    >
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="country_id" />
+                            <field name="number" placeholder="+1 202-555-0100" />
+                        </list>
+                    </field>
+                </group>
+                <group string="Incoming Messages and Delivery Reports">
+                    <field name="webhook_url" widget="CopyClipboardChar" />
+                    <div
+                        colspan="2"
+                        class="text-muted"
+                    >Set this URL as the v2 webhook on the Telnyx messaging profile and enter the account public key above.</div>
+                </group>
+                <footer>
+                    <button
+                        name="action_save"
+                        string="Update Account"
+                        type="object"
+                        class="btn-primary"
+                        data-hotkey="q"
+                    />
+                    <button
+                        string="Cancel"
+                        class="btn-secondary"
+                        special="cancel"
+                        data-hotkey="x"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

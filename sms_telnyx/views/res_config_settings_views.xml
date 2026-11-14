@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sms.telnyx</field>
+        <field name="model">res.config.settings</field>
+        <!--
+            Inherit sms_twilio's view rather than the sms base view, so the
+            attribute override below is guaranteed to apply after the one
+            sms_twilio sets on the same node.
+        -->
+        <field name="inherit_id" ref="sms_twilio.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <!--
+                sms_twilio hides the IAP credits widget when Twilio is the
+                provider; it must also be hidden for Telnyx, or a database
+                sending through Telnyx is invited to buy Odoo SMS credits it
+                will never spend.
+            -->
+            <xpath expr="//widget[@service_name='sms']" position="attributes">
+                <attribute
+                    name="invisible"
+                >sms_provider in ('twilio', 'telnyx')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sms_provider']" position="after">
+                <div class="content-group" invisible="sms_provider != 'telnyx'">
+                    <button
+                        name="action_open_sms_telnyx_account_manage"
+                        icon="east"
+                        type="object"
+                        class="btn-link"
+                        string="Configure Telnyx Account"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
